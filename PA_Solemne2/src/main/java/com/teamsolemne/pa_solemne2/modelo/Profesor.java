@@ -6,12 +6,18 @@ public class Profesor extends Usuario {
     private String nombre, apellidos, email;
     
     // Constructor
-    public Profesor(int id, int especialista, String login, String clave, String nombre, String apellidos, String email){
+    public Profesor(int id, String login, String clave, String nombre, String apellidos, String email, int especialista){
         super(id, login, clave);
         this.especialista = especialista;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.email = email;
+    }
+    
+    // Funciones
+    @Override
+    public String toString(){
+        return String.format("id: %s, login: %s, clave: %s, nombre: %s, apellidos: %s, email: %s, especialista: %s", id, login, clave, nombre, apellidos, email, especialista);
     }
     
     // Getters y setters

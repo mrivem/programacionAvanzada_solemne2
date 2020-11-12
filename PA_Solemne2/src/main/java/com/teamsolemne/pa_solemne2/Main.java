@@ -11,7 +11,7 @@ public class Main {
         Alumno al = new Alumno(1, 1, "login", "clave", "minombre", "apelli dos");
         
         OperacionesAlumno op = new OperacionesAlumno();
-        op.listarAlumnosClase(al);
+        op.listarProfesores(al);
 
     }
 }

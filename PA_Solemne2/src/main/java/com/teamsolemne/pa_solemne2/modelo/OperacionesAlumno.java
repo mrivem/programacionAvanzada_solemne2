@@ -94,8 +94,89 @@ public class OperacionesAlumno extends Conexion {
         }
     }
     
-    public ArrayList<Profesor> listarProfesores(Alumno alumno){
-        return null;
+    public Object[] listarProfesores(Alumno alumno){
+        ArrayList<Profesor> profesores = new ArrayList<>();         // Campo a retornar
+        ArrayList<String> nombreAsignaturas = new ArrayList<>();    // Campo a retornar
+        ArrayList<Object> auxList = new ArrayList<>();
+        
+        if (VERBOSE) System.out.format("listarProfesores para alumno %s\n", alumno.toString());
+        
+        // Preparo la query, pido asignaturas del usuario
+        PreparedStatement ps;
+        ResultSet rs;
+        Connection con = getConexion();
+        String sql = "SELECT * FROM asignatura_has_alumno WHERE alumno_id = ?";
+        if (VERBOSE) System.out.println(sql);
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, alumno.id);
+            rs = ps.executeQuery();
+            // Para cada asignatura
+            while(rs.next()){
+                // Guardo el id
+                if (VERBOSE) System.out.format("Alumno id:%s en asignatura id:%s\n", alumno.id, rs.getInt("asignatura_id"));
+                auxList.add(rs.getInt("asignatura_id"));
+            }
+            Object[] ids_asignaturas = auxList.toArray();
+            auxList.clear();
+            
+            // Preparo la query, pido los ids de los profes en las asignaturas
+            sql = "SELECT * FROM asignaturas WHERE id = ?";
+            ps = con.prepareStatement(sql);
+            if (VERBOSE) System.out.println(sql);
+            for(int i = 0; i < ids_asignaturas.length; i++){                
+                ps.setInt(1, (int) ids_asignaturas[i]);
+                rs = ps.executeQuery();
+                // Para cada alumno
+                while(rs.next()){
+                    if (VERBOSE) System.out.format("Asignatura id:%s con profe id:%s\n", (int) ids_asignaturas[i], rs.getInt("profesor_id"));
+                    nombreAsignaturas.add(rs.getString("nombre"));
+                    auxList.add(rs.getInt("profesor_id"));
+                }
+            }
+            Object[] ids_profesores = auxList.toArray();
+            auxList.clear();
+            
+            // Preparo la query, pido todos los datos de los profes por su id
+            sql = "SELECT * FROM profesores WHERE id = ?";
+            ps = con.prepareStatement(sql);
+            if (VERBOSE) System.out.println(sql);
+            for(int i = 0; i < ids_profesores.length; i++){                
+                ps.setInt(1, (int) ids_profesores[i]);
+                rs = ps.executeQuery();
+                // Para cada profe
+                while(rs.next()){
+                    // Agregalo a la lista
+                    profesores.add(new Profesor(
+                            rs.getInt("id"),
+                            rs.getString("login"),
+                            rs.getString("clave"),
+                            rs.getString("nombre"),
+                            rs.getString("apellidos"),
+                            rs.getString("email"),
+                            rs.getInt("especialista")
+                    ));
+                }
+            }
+            
+            if(VERBOSE){
+                System.out.format("%s resultados obtenidos\n", profesores.size());
+                for(int i = 0; i < profesores.size(); i++){
+                    System.out.format("Profesor -> %s realizando la asignatura %s\n", profesores.get(i).toString(), nombreAsignaturas.get(i));
+                }
+            }
+            // Retorna la lista
+            return new Object[]{profesores, nombreAsignaturas};
+        } catch (SQLException e) {
+            System.err.println(e);
+            return null;
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
     }
     
     public ArrayList<Asignatura> listarAsignaturas(Alumno alumno){
