@@ -14,6 +14,12 @@ public class Alumno extends Usuario {
         this.apellidos = apellidos;
     }
     
+    // Functions
+    @Override
+    public String toString(){
+        return String.format("id:%s nivel_id:%s login:%s clave:%s nombre:%s apellidos:%s", id, nivel_id, login, clave, nombre, apellidos);
+    }
+    
     // Getters y setters
     public int getNivel_id() {
         return nivel_id;
