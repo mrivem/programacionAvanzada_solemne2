@@ -13,6 +13,12 @@ public class Asignatura {
         this.nombre = nombre;
     }
     
+    // Funciones
+    @Override
+    public String toString(){
+        return String.format("id: %s, nivel_id: %s, profesor_id: %s, nombre: %s", id, nivel_id, profesor_id, nombre);
+    }
+    
     // Getters y setters
     public int getId() {
         return id;

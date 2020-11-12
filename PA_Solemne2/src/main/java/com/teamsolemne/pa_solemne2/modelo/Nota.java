@@ -14,6 +14,12 @@ public class Nota {
         this.nota = nota;
     }
     
+    // Funcion
+    @Override
+    public String toString(){
+        return String.format("id: %s, id_alumno: %s, id_asignatura: %s, trimestre: %s, nota: %s", id, id_alumno, id_asignatura, trimestre, nota);
+    }
+    
     // Getters y setters
     public int getId() {
         return id;
