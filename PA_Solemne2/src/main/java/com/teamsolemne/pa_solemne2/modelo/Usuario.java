@@ -1,6 +1,6 @@
 package com.teamsolemne.pa_solemne2.modelo;
 
-abstract class Usuario {
+public class Usuario {
     private int id;
     private String login, clave;
 
