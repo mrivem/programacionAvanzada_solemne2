@@ -6,17 +6,20 @@ import com.teamsolemne.pa_solemne2.modelo.Alumno;
 import com.teamsolemne.pa_solemne2.modelo.OperacionesAutenticacion;
 import com.teamsolemne.pa_solemne2.modelo.Profesor;
 import com.teamsolemne.pa_solemne2.modelo.Usuario;
+import com.teamsolemne.pa_solemne2.vista.P10_VistaAlumno;
+import com.teamsolemne.pa_solemne2.vista.P20_VistaProfesor;
+import com.teamsolemne.pa_solemne2.vista.P30_VistaAdministrador;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 
-public class ControladorP00 implements ActionListener {
+public class ControladorC00 implements ActionListener {
     
     //private final Usuario mod;
     private final OperacionesAutenticacion modC;
     private final P00_InicioSesion frame;
     
-    public ControladorP00(P00_InicioSesion frame){
+    public ControladorC00(P00_InicioSesion frame){
         //this.mod = new Usuario(0, "", "");
         this.modC = new OperacionesAutenticacion();
         this.frame = frame;
@@ -44,16 +47,16 @@ public class ControladorP00 implements ActionListener {
                 System.out.println("Usuario autenticado exitosamente");
                 if(loggedUser instanceof Alumno){
                     System.out.format("Iniciando como alumno -> %s\n", ((Alumno) loggedUser).toString());
-                    //ControladorP10 con = new ControladorP10(new P10_VistaEncargado());
-                    //con.iniciar();
+                    ControladorC10 con = new ControladorC10(new P10_VistaAlumno(), (Alumno) loggedUser);
+                    con.iniciar();
                 } else if (loggedUser instanceof Profesor){
                     System.out.format("Iniciando como Profesor -> %s\n", ((Profesor) loggedUser).toString());
-                    //ControladorP20 con = new ControladorP20(new P20_VistaProfesor());
-                    //con.iniciar();
+                    ControladorC20 con = new ControladorC20(new P20_VistaProfesor(), (Profesor) loggedUser);
+                    con.iniciar();
                 } else if (loggedUser instanceof Administrador){
                     System.out.format("Iniciando como Administrador -> %s\n", ((Administrador) loggedUser).toString());
-                    //ControladorP30 con = new ControladorP30(new P30_VistaAdministrador());
-                    //con.iniciar();
+                    ControladorC30 con = new ControladorC30(new P30_VistaAdministrador(), (Administrador) loggedUser);
+                    con.iniciar();
                 }
                 frame.dispose();
             } else {
