@@ -98,6 +98,44 @@ public class OperacionesAlumno extends Conexion {
         }
     }
     
+    public Alumno buscarAlumno(int id){     
+        if (VERBOSE) System.out.format("buscarAlumno con id %S\n", id);
+        
+        // Preparo la query
+        PreparedStatement ps;
+        ResultSet rs;
+        Connection con = getConexion();
+        String sql = "SELECT * FROM alumnos WHERE id = ?;";
+        if (VERBOSE) System.out.println(sql);
+            
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, id);
+            rs = ps.executeQuery();
+            
+            while(rs.next()){
+                return new Alumno(
+                        rs.getInt("id"),
+                        rs.getInt("nivel_id"),
+                        rs.getString("login"),
+                        rs.getString("clave"),
+                        rs.getString("nombre"),
+                        rs.getString("apellidos")
+                );
+            }
+        } catch (SQLException e) {
+            System.err.println(e);
+            return null;
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
+        return null;
+    }
+    
     public boolean matricularAlumno(Alumno alumno, Asignatura asignatura){
         if (VERBOSE) System.out.format("matricularAlumno con alumno %s y asignatura %s\n", alumno.toString(), asignatura.toString());
         
@@ -111,7 +149,7 @@ public class OperacionesAlumno extends Conexion {
         try {
             
             String sqlAux = "SELECT COUNT(*) FROM notas";
-            ps = con.prepareStatement(sql);
+            ps = con.prepareStatement(sqlAux);
             rs = ps.executeQuery();
             int notaID = -1;
             while(rs.next()){
