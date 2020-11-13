@@ -1,8 +1,8 @@
 package com.teamsolemne.pa_solemne2.modelo;
 
 abstract class Usuario {
-    protected int id;
-    protected String login, clave;
+    private int id;
+    private String login, clave;
 
     public Usuario(int id, String login, String clave) {
         this.id = id;

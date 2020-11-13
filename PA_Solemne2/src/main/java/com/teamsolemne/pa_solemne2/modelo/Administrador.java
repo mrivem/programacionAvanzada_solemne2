@@ -11,6 +11,12 @@ public class Administrador extends Usuario {
         this.email = email;
     }
     
+    // Funciones
+    @Override
+    public String toString(){
+        return String.format("id: %s, login: %s, clave: %s, email: %s", getId(), getLogin(), getClave(), email);
+    }
+    
     // Getters y setters
     public String getEmail() {
         return email;

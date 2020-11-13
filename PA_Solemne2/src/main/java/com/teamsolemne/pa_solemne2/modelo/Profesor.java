@@ -17,7 +17,7 @@ public class Profesor extends Usuario {
     // Funciones
     @Override
     public String toString(){
-        return String.format("id: %s, login: %s, clave: %s, nombre: %s, apellidos: %s, email: %s, especialista: %s", id, login, clave, nombre, apellidos, email, especialista);
+        return String.format("id: %s, login: %s, clave: %s, nombre: %s, apellidos: %s, email: %s, especialista: %s", getId(), getLogin(), getClave(), nombre, apellidos, email, especialista);
     }
     
     // Getters y setters

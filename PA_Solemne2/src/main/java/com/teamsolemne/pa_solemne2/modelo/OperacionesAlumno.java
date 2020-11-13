@@ -11,6 +11,131 @@ public class OperacionesAlumno extends Conexion {
     // VERBOSE = Quiero que el programa me imprima en consola todo lo que hace
     private static final boolean VERBOSE = true;
     
+    public boolean registrarAlumno(Alumno alumno){     
+        if (VERBOSE) System.out.format("registrarAlumno con alumno %S\n", alumno.toString());
+        
+        // Preparo la query
+        PreparedStatement ps;
+        Connection con = getConexion();
+        String sql = "INSERT INTO alumnos (nivel_id, login, clave, nombre, apellidos) VALUES (?, ?, ?, ?, ?);";
+        if (VERBOSE) System.out.println(sql);
+            
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, alumno.getNivel_id());
+            ps.setString(2, alumno.getLogin());
+            ps.setString(3, alumno.getClave());
+            ps.setString(4, alumno.getNombre());
+            ps.setString(5, alumno.getApellidos());
+            ps.execute();
+            return true;
+        } catch (SQLException e) {
+            System.err.println(e);
+            return false;
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
+    }
+    
+    public boolean eliminarAlumno(int id){     
+        if (VERBOSE) System.out.format("eliminarAlumno con id %S\n", id);
+        
+        // Preparo la query
+        PreparedStatement ps;
+        Connection con = getConexion();
+        String sql = "DELETE FROM alumnos WHERE id = ?;";
+        if (VERBOSE) System.out.println(sql);
+            
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, id);
+            ps.execute();
+            return true;
+        } catch (SQLException e) {
+            System.err.println(e);
+            return false;
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
+    }
+    
+    public boolean modificarAlumno(Alumno alumno){     
+        if (VERBOSE) System.out.format("modificarAlumno con alumno %S\n", alumno.toString());
+        
+        // Preparo la query
+        PreparedStatement ps;
+        Connection con = getConexion();
+        String sql = "UPDATE alumnos SET nivel_id = ?, login = ?, clave = ?, nombre = ?, apellidos = ? WHERE id = ?;";
+        if (VERBOSE) System.out.println(sql);
+            
+        try {
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, alumno.getNivel_id());
+            ps.setString(2, alumno.getLogin());
+            ps.setString(3, alumno.getClave());
+            ps.setString(4, alumno.getNombre());
+            ps.setString(5, alumno.getApellidos());
+            ps.setInt(6, alumno.getId());
+            ps.execute();
+            return true;
+        } catch (SQLException e) {
+            System.err.println(e);
+            return false;
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
+    }
+    
+    public boolean matricularAlumno(Alumno alumno, Asignatura asignatura){
+        if (VERBOSE) System.out.format("matricularAlumno con alumno %s y asignatura %s\n", alumno.toString(), asignatura.toString());
+        
+        // Preparo la query
+        PreparedStatement ps;
+        ResultSet rs;
+        Connection con = getConexion();
+        String sql = "INSERT INTO asignatura_has_alumno (asignatura_id, alumno_id, nota_id) VALUES (?, ?, ?)";
+        if (VERBOSE) System.out.println(sql);
+        
+        try {
+            
+            String sqlAux = "SELECT COUNT(*) FROM notas";
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            int notaID = -1;
+            while(rs.next()){
+                notaID = rs.getInt("COUNT(*)") + 1;
+            }
+            
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, alumno.getId());
+            ps.setInt(2, asignatura.getId());
+            ps.setInt(3, notaID);
+            ps.execute();
+            return true;
+        } catch (SQLException e) {
+            System.err.println(e);
+            return false;
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
+    }
+    
     public ArrayList<Alumno> listarAlumnosClase(Alumno alumno){
         ArrayList<Alumno> alumnos = new ArrayList<>();  // Campo a retornar
         ArrayList<Object> auxList = new ArrayList<>();  // Guardará los ids de las asignaturas del alumno
@@ -26,12 +151,12 @@ public class OperacionesAlumno extends Conexion {
         if (VERBOSE) System.out.println(sql);
         try {
             ps = con.prepareStatement(sql);
-            ps.setInt(1, alumno.id);
+            ps.setInt(1, alumno.getId());
             rs = ps.executeQuery();
             // Para cada asignatura
             while(rs.next()){
                 // Guardo el id
-                if (VERBOSE) System.out.format("Alumno id:%s en asignatura id:%s\n", alumno.id, rs.getInt("asignatura_id"));
+                if (VERBOSE) System.out.format("Alumno id:%s en asignatura id:%s\n", alumno.getId(), rs.getInt("asignatura_id"));
                 auxList.add(rs.getInt("asignatura_id"));
             }
             
@@ -48,7 +173,7 @@ public class OperacionesAlumno extends Conexion {
                 while(rs.next()){
                     if (VERBOSE) System.out.format("Asignatura id:%s con alumno id:%s\n", i_id, rs.getInt("alumno_id"));
                     // si el id no existe en la lista y no es el id del alumno que realiza la operacion, agregalo
-                    if(!auxList2.contains(rs.getInt("alumno_id")) && rs.getInt("alumno_id") != alumno.id)
+                    if(!auxList2.contains(rs.getInt("alumno_id")) && rs.getInt("alumno_id") != alumno.getId())
                         auxList2.add(rs.getInt("alumno_id"));
                 }
             }
@@ -109,12 +234,12 @@ public class OperacionesAlumno extends Conexion {
         if (VERBOSE) System.out.println(sql);
         try {
             ps = con.prepareStatement(sql);
-            ps.setInt(1, alumno.id);
+            ps.setInt(1, alumno.getId());
             rs = ps.executeQuery();
             // Para cada asignatura
             while(rs.next()){
                 // Guardo el id
-                if (VERBOSE) System.out.format("Alumno id:%s en asignatura id:%s\n", alumno.id, rs.getInt("asignatura_id"));
+                if (VERBOSE) System.out.format("Alumno id:%s en asignatura id:%s\n", alumno.getId(), rs.getInt("asignatura_id"));
                 auxList.add(rs.getInt("asignatura_id"));
             }
             Object[] ids_asignaturas = auxList.toArray();
@@ -193,12 +318,12 @@ public class OperacionesAlumno extends Conexion {
         if (VERBOSE) System.out.println(sql);
         try {
             ps = con.prepareStatement(sql);
-            ps.setInt(1, alumno.id);
+            ps.setInt(1, alumno.getId());
             rs = ps.executeQuery();
             // Para cada asignatura
             while(rs.next()){
                 // Guardo el id
-                if (VERBOSE) System.out.format("Alumno id:%s en asignatura id:%s\n", alumno.id, rs.getInt("asignatura_id"));
+                if (VERBOSE) System.out.format("Alumno id:%s en asignatura id:%s\n", alumno.getId(), rs.getInt("asignatura_id"));
                 auxList.add(rs.getInt("asignatura_id"));
             }
             Object[] ids_asignaturas = auxList.toArray();
